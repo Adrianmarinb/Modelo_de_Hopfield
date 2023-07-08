@@ -10,6 +10,20 @@ const int M = 4; // Number of reference images used
 
 gsl_rng *tau;
 
+// Adrián Marín Boyero, Física UGR
+
+//---------------------------------------------------------------------------------------------------
+/*
+
+This C++ script processes storages patterns and storages it into the Hopfield algorithm.
+
+For more than one reference images, they are all storaged in a 2D-array named "references"
+
+To change the functionality of the script, you can change the string "modo" down below. 
+
+*/
+//---------------------------------------------------------------------------------------------------
+
 class image
 {public:
     int data[N][N];
@@ -19,18 +33,18 @@ class image
 
 void generate_s(int s[N][N], gsl_rng *tau, string mode) // We generate our initial set of 1s and 0s
 {
-    double sesgo = 0.1;
+    double sesgo = -0.5;
     for(int i=0; i<N; i++)
     {
         for(int j=0; j<N; j++)
         {
             if(mode == "sesgo")
             { 
-                if( (gsl_rng_uniform(tau) - sesgo) >= 0.5)
+                if( (gsl_rng_uniform(tau) - sesgo) > 0.5)
                 {
                   s[i][j] = 0;
                 }
-                else{ s[i][j] = 1; }                
+                else{ s[i][j] = 1;}                
             }
 
             if(mode == "random")
@@ -39,7 +53,7 @@ void generate_s(int s[N][N], gsl_rng *tau, string mode) // We generate our initi
             }
 
             if(mode == "1s"){ s[i][j] = 1; }
-            if(mode == "0s"){ s[i][j] = gsl_rng_uniform_int (tau,2); }
+            if(mode == "0s"){ s[i][j] = 0; }
         }}
 }
 
@@ -320,7 +334,7 @@ int main()
     ofstream imagenes;
 
     // Number of Montecarlo Steps (MS) we want to run
-    int MS = 3;
+    int MS = 30;
 
     string modo = "normal"; //"normal", "temperaturas" o "remembered_patterns" (apartado4)
     double T = pow(10, -4); // Temperature
@@ -329,10 +343,12 @@ int main()
     {
 
         // We define the reference images we will get binary data from
+        
         image salchicha; salchicha.name = "salchicha.txt";
         image casa_azul; casa_azul.name = "casa_azul.txt";
         image palmera; palmera.name = "palmera.txt";
         image octopus; octopus.name = "octopus.txt";
+        
 
         // For ortognal images
         /*
@@ -348,7 +364,7 @@ int main()
         get_data_for_a_binary_image(palmera.data, palmera.input, palmera.name);
         get_data_for_a_binary_image(octopus.data, octopus.input, octopus.name);
 
-        generate_s(s, tau, "random"); // We generate our initial, 2d binary array (random, sesgo vs 1s, 0s)
+        generate_s(s, tau, "sesgo"); // We generate our initial, 2d binary array (random, sesgo vs 1s, 0s)
 
         //deformacion(s, salchicha.data, tau, 50);
 
